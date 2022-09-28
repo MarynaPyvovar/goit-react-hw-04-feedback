@@ -5,31 +5,37 @@ import { FeedbackOptions } from './FeedbackOptions/FeedbackOptions';
 import { Stats } from './Stats/Stats';
 import { Notification } from './Notification/Notification';
 
-const initialState = {
-  good: 0,
-  neutral: 0,
-  bad: 0,
-}
-
 export default function Counter() {
-  const [state, setState] = useState(initialState);
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
 
   const countTotalFeedback = () => {
-    const { good, neutral, bad, } = state;
     return (good + neutral + bad);
   }
 
   const countPositiveFeedbackPercentage = () => {
     const total = countTotalFeedback();
-    const result = (state.good / total) * 100;
+    const result = (good / total) * 100;
     return Number(result.toFixed(0));
   }
 
   const handleFeedback = (vote) => {
-    setState(prev => ({
-      ...prev,
-      [vote]: prev[vote] + 1,
-    }))
+    switch (vote) {
+      case 'good':
+        setGood(good + 1)
+        break;
+      case 'neutral':
+        setNeutral(neutral + 1)
+        break;
+      case 'bad':
+        setBad(bad + 1)
+        break;
+      default:
+        setGood(0)
+        setNeutral(0)
+        setBad(0)
+    }
   }
 
   const total = countTotalFeedback();
@@ -37,15 +43,15 @@ export default function Counter() {
 
   return <>
       <Section title="Please leave your feedback">
-        <FeedbackOptions options={Object.keys(state)} handler={handleFeedback} />
+        <FeedbackOptions options={['good', 'neutral', 'bad']} handler={handleFeedback} />
       </Section>
       <Section title="Statistics">
         {!total ?
         <Notification message="There is no feedback :(" /> :
         <Stats
-        good={state.good}
-        neutral={state.neutral}
-        bad={state.bad}
+        good={good}
+        neutral={neutral}
+        bad={bad}
         total={total}
         positivePercent={positivePercent} />}
       </Section>
